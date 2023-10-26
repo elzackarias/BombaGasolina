@@ -1,5 +1,10 @@
 public class TestBomba {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        BombaControlador controlador = new BombaControlador();
+        BombaModelo modelo = new BombaModelo();
+        BombaVista vista = new BombaVista(controlador);
+        controlador.setModelo(modelo);
+        controlador.setVista(vista);
+        vista.setVisible(true);
     }
 }

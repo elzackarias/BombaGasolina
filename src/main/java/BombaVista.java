@@ -124,6 +124,7 @@ public class BombaVista extends JFrame {
         panelMain.add(panelRightSide, BorderLayout.EAST);
         panelMain.setBackground(Color.BLACK);
         this.add(panelMain);
+        this.add(new JLabel("Creado por @elzackarias"), BorderLayout.PAGE_END);
     }
     public void disableAllBtn(){
         btn9.setEnabled(false);
@@ -155,5 +156,8 @@ public class BombaVista extends JFrame {
     }
     public void showError(String msg) {
         JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    public void showInfo(String title, String msg) {
+        JOptionPane.showMessageDialog(null, msg, title, JOptionPane.INFORMATION_MESSAGE);
     }
 }

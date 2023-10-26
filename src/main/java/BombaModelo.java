@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class BombaModelo {
     private int litrosDeposito;
     private boolean isPeso;
@@ -24,20 +26,25 @@ public class BombaModelo {
     public int getLitrosDeposito(){
         return litrosDeposito;
     }
-    public void despachar(int litrosSolicitados){
+    public ArrayList<DataReturn> despachar(int litrosSolicitados){
+        boolean isExceed = false;
         if(litrosSolicitados > litrosDeposito){
             System.out.println("No hay suficiente gasolina en el depósito. Se despachan " + litrosDeposito + " litros.");
             litrosSolicitados = litrosDeposito;
+            isExceed = true;
         }
         float costoTotal = litrosSolicitados * precioLitro;
         litrosDeposito -= litrosSolicitados;
         System.out.println("Litros servidos: " + litrosSolicitados);
         System.out.println("Litros disponibles en el depósito: " + litrosDeposito);
         System.out.println("Costo total: $" + costoTotal);
+        ArrayList<DataReturn> dataReturns = new ArrayList<>();
+        dataReturns.add(new DataReturn(litrosSolicitados + "", litrosDeposito + "", costoTotal + "", isExceed));
+        return dataReturns;
     }
-    public void despachar(float cantidadPesos){
+    public ArrayList<DataReturn> despachar(float cantidadPesos){
         int litros = convertPesoToLiters(cantidadPesos);
-        despachar(litros);
+        return despachar(litros);
     }
 
     public int convertPesoToLiters(float cantidadPesos){

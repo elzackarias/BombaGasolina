@@ -1,5 +1,7 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class BombaControlador implements ActionListener {
     private BombaModelo modelo;
@@ -77,39 +79,49 @@ public class BombaControlador implements ActionListener {
             addDisplay(0, modelo.getIsPeso());
             //System.out.println(modelo.getPrecioLitro());
         }
-        if(e.getSource() == vista.btnPunto){
+        if (e.getSource() == vista.btnPunto) {
             System.out.println("Me pucharon punto");
-                if(vista.txtQtyVenta.getText().contains(".")){
-                    vista.showError("Ya hay un punto en la cantidad de pesos");
-                }else{
-                    vista.txtQtyVenta.setText(vista.txtQtyVenta.getText() + ".");
-                    modelo.convertPesoToLiters(Float.parseFloat(vista.txtQtyVenta.getText().substring(1)));
-                }
+            if (vista.txtQtyVenta.getText().contains(".")) {
+                vista.showError("Ya hay un punto en la cantidad de pesos");
+            } else {
+                vista.txtQtyVenta.setText(vista.txtQtyVenta.getText() + ".");
+                modelo.convertPesoToLiters(Float.parseFloat(vista.txtQtyVenta.getText().substring(1)));
+            }
         }
 
-        if(e.getSource() == vista.btnSetPrecio){
-            try{
+        if (e.getSource() == vista.btnSetPrecio) {
+            try {
                 float newPrecio = Float.parseFloat(vista.inputPrecio.getText());
                 this.modelo.setPrecioLitro(newPrecio);
                 System.out.println("Cambiado precio a " + vista.inputPrecio.getText());
                 this.vista.txtQtyLitros.setText("0.00");
                 this.vista.txtQtyVenta.setText("$0.00");
-            }catch(NumberFormatException err){
+            } catch (NumberFormatException err) {
                 vista.showError("Error al cambiar el precio, solo se aceptan números, intenta nuevamente.");
                 this.vista.inputPrecio.setText("21.0");
             }
         }
 
-        if(e.getSource() == vista.btnDespachar){
-            try{
-                if(modelo.getIsPeso()){
-                    modelo.despachar(Float.parseFloat(vista.txtQtyVenta.getText().substring(1)));
-                }else{
-                    modelo.despachar(Integer.parseInt(vista.txtQtyLitros.getText()));
+        if (e.getSource() == vista.btnDespachar) {
+            try {
+                ArrayList<DataReturn> dataReturns;
+                if (modelo.getIsPeso()) {
+                    dataReturns = modelo.despachar(Float.parseFloat(vista.txtQtyVenta.getText().substring(1)));
+                } else {
+                    dataReturns = modelo.despachar(Integer.parseInt(vista.txtQtyLitros.getText()));
+                }
+                if (Objects.equals(dataReturns.get(0).disponible, "0") && Objects.equals(dataReturns.get(0).servido, "0")) {
+                    vista.showInfo("No hay gasolina", "Ya no hay gasolina en el depósito");
+                } else {
+
+                    if (dataReturns.get(0).isExceed) {
+                        vista.showInfo("No tenemos suficiente :c", "No tenemos suficiente gasolina pero te despachamos: " + dataReturns.get(0).servido + " litros.");
+                    }
+                    vista.showInfo("Despachado", "Se despacharon " + dataReturns.get(0).servido + " litros, quedan " + dataReturns.get(0).disponible + " litros en el depósito. El costo total es de $" + dataReturns.get(0).costoTotal);
                 }
                 vista.txtQtyLitros.setText("0.00");
                 vista.txtQtyVenta.setText("$0.00");
-            }catch(NumberFormatException err){
+            } catch (NumberFormatException err) {
                 vista.showError("Error al despachar, solo se aceptan números, intenta nuevamente.");
                 this.vista.inputPrecio.setText("21.0");
             }
@@ -128,7 +140,7 @@ public class BombaControlador implements ActionListener {
             System.out.println("Me pucharon " + key);
             String prevValue = vista.txtQtyVenta.getText().equals("$0.00") ? "$" : vista.txtQtyVenta.getText();
             vista.txtQtyVenta.setText(prevValue.charAt(0) == '$' ? prevValue + key : "$" + prevValue + key);
-            vista.txtQtyLitros.setText(modelo.convertPesoToLiters(Float.parseFloat(vista.txtQtyVenta.getText().substring(1)))+"");
+            vista.txtQtyLitros.setText(modelo.convertPesoToLiters(Float.parseFloat(vista.txtQtyVenta.getText().substring(1))) + "");
         }
     }
 
@@ -143,7 +155,7 @@ public class BombaControlador implements ActionListener {
     public void setVista(BombaVista vista) {
         this.vista = vista;
         vista.inputPrecio.setText(modelo.getPrecioLitro() + "");
-        vista.showError("Nomas hay pura magna :(");
+        vista.showInfo("Ojooo", "Nomas hay pura magna :(");
     }
 
     public BombaVista getVista() {
